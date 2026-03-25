@@ -1,0 +1,19 @@
+{
+    "name": "cckit",
+    "version": "0.1.0",
+    "description": "A Lightweight C++ Common Utility Library.",
+    "dependencies": [
+        {
+            "name": "boost-uuid",
+            "version>=": "1.89.0"
+        },
+        {
+            "name": "glm",
+            "version>=": "1.0.3"
+        },
+        {
+            "name": "spdlog",
+            "version>=": "1.15.3"
+        }
+    ]
+}

@@ -3,12 +3,12 @@ find_package(spdlog CONFIG REQUIRED)
 
 if(CCKIT_BUILD_SHARED)
     add_library(cckit-logging SHARED
-        src/log.cpp
+        src/Logging.cpp
     )
     target_compile_definitions(cckit-logging PRIVATE CCKIT_BUILDING_DLL)
 else()
     add_library(cckit-logging STATIC
-        src/log.cpp
+        src/Logging.cpp
     )
 endif()
 

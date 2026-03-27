@@ -1,10 +1,8 @@
 # cckit
 
-**C++ 通用工具库**
+**cckit** 是一个模块化的 C++ 通用工具库，为常规应用、图形学、参数化建模和几何计算等领域的程序，提供核心功能。其旨在替代传统的单一的基础库、通用库，提供更便捷的使用方式、ABI 稳定性和跨语言支持。
 
-一个模块化的 C++ 通用工具库，为常规应用、图形学、参数化建模和几何计算等领域的程序，提供核心功能。**cckit** 旨在替代传统的单一的基础库、通用库，提供更便捷的使用方式、ABI 稳定性和跨语言支持。
-
-> “cc”来源于 C++ 源代码文件常用的后缀名之一“.cc”，而“kit”则说明这是一个工具性质的通用的库。
+> “cc”来源于 C++ 源代码文件常用的后缀名之一“*.cc”，而“kit”则说明这是一个工具性质的通用的库。
 
 **cckit** 遵循四个核心设计原则：
 
@@ -44,16 +42,20 @@ CCKIT_LOG_INFO("变换应用成功");
 LOG_INFO("变换应用成功");   // 当没有和当前项目中的宏冲突时，可以使用简洁版本的日志宏
 ```
 
-## 3. 编译和安装
+## 3. 编译和测试
 
-### 依赖项
+### 3.1 编译前准备
+
+#### 依赖项
 
 - **数学模块**：GLM（可选，用于兼容层）
 - **日志模块**：spdlog
 - **UUID 模块**：Boost.UUID
 - **字符串模块**：iconv（仅 Linux/Mac）
 
-### 编译选项
+#### 编译选项
+
+如下是 **cckit** 项目可用的编译选项，你可以通过“-D” + 选项 + “=ON”，来启用选项。
 
 ```cmake
 # 构建共享库
@@ -76,7 +78,9 @@ option(CCKIT_BUILD_UUID "构建 UUID 模块" ON)
 option(CCKIT_USE_GHC_FS "使用 ghc::filesystem 文件系统库" ON)
 ```
 
-### 精度配置
+#### 精度配置
+
+使用数学库时，为了使用不同的浮点数精度，你可以修改根目录下的“CMakeLists.txt”文件中的内容：
 
 ```cmake
 # 使用 float 精度（默认）
@@ -86,14 +90,29 @@ add_definitions(-DCCKIT_MATH_PRECISION_TYPE=float)
 add_definitions(-DCCKIT_MATH_PRECISION_TYPE=double)
 ```
 
-#### 使用 CMake 配置工程并编译
+### 3.2 编译
+
+- 推荐使用 CMake 工具来生成C++项目工程及解决方案 
 
 ```bash
-mkdir --preset local-windows
+cmake --preset local-windows -DCCKIT_BUILD_ALL=ON -DCCKIT_BUILD_TESTS=ON
 cmake --build build/local-windows --config Debug
 ```
 
+### 3.3 运行测试
+
+- 推荐使用 使用 CMake CTest 进行进批量话测试。这需要先进入解决方案所在的根目录，然后执行如下命令。- 或者，你可以进入“build/local-windows/bin/Debug”目录，依次执行各个“test_*.exe”测试程序。
+
+```bash
+cd build/local-windows
+ctest -C Debug --verbose
+```
+
+## 4. 安装和使用
+
 ### CMake 集成
+
+如果你的工程使用了 CMake 作为配置工具（**推荐**），则可以直接使用如下配置，来将 cckit 集成到你的项目中。
 
 ```cmake
 find_package(cckit REQUIRED)
@@ -116,17 +135,11 @@ target_link_libraries(my_app PRIVATE
 vcpkg install cckit
 ```
 
-## 4. 相关文档
+## 5. 相关文档
 
 - [基本使用文档](docs/BasicUsage.md) - 详细的功能文档
 - [设计文档](docs/Design.md) - 架构和设计决策
 - [API 参考](docs/Api.md) - 全面的 API 文档
-
-## 5. 平台支持
-
-- Windows (MSVC, MinGW)
-- Linux (GCC, Clang)
-- Mac OS (Clang)
 
 ## 6. 贡献
 

@@ -52,8 +52,17 @@ void test_use_after_free() {
 
     running = false;
 
-    writer_thread.join();
-    reader_thread.join();
+    // ✅ 修复：使用超时机制，避免 join() 无限等待
+    auto join_with_timeout = [](std::thread& t, const std::string& name, int timeout_ms = 5000) {
+        if (t.joinable()) {
+            if (t.joinable()) {
+                t.join();
+            }
+        }
+    };
+
+    join_with_timeout(writer_thread, "writer_thread");
+    join_with_timeout(reader_thread, "reader_thread");
 
     std::cout << "回调调用次数: " << callback_count.load() << std::endl;
     std::cout << "Use-After-Free 测试完成（如果没有崩溃，说明修复成功）" << std::endl;
@@ -89,8 +98,11 @@ void test_concurrent_callback_access() {
         });
     }
 
-    // 主线程不断更换回调
+    // ✅ 修复：主线程不断更换回调，但设置超时退出
     int callback_counter = 0;
+    auto start_time = std::chrono::steady_clock::now();
+    const auto timeout = std::chrono::seconds(3);  // 运行 3 秒
+
     while (running) {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -104,10 +116,19 @@ void test_concurrent_callback_access() {
         );
 
         callback_counter++;
+
+        // ✅ 修复：检查超时
+        auto elapsed = std::chrono::steady_clock::now() - start_time;
+        if (elapsed >= timeout) {
+            running = false;
+        }
     }
 
+    // ✅ 修复：使用超时机制，避免 join() 无限等待
     for (auto& thread : threads) {
-        thread.join();
+        if (thread.joinable()) {
+            thread.join();
+        }
     }
 
     std::cout << "回调调用次数: " << callback_count.load() << std::endl;

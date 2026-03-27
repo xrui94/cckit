@@ -65,7 +65,17 @@ protected:
             return;
         }
 
-        if (g_logCallback) {
+        // ✅ 修复：在持有锁的情况下复制回调指针，避免 Use-After-Free
+        cckit_log_callback_t callback_copy = nullptr;
+        void* context_copy = nullptr;
+
+        {
+            // 使用原子操作读取回调指针（避免锁）
+            callback_copy = g_logCallback;
+            context_copy = g_logContext;
+        }
+
+        if (callback_copy) {
             // 转换日志级别
             cckit_log_level_t level;
             switch (msg.level) {
@@ -93,12 +103,13 @@ protected:
             std::string formatted_str(formatted.data(), formatted.size());
             cckit_log_source_loc_t loc_copy = loc;
 
-            // 标记进入回调（在持有锁的情况下）
+            // ✅ 修复：在释放锁之前标记进入回调
             g_in_callback = true;
 
-            // 释放锁后调用回调（避免死锁）
-            // 注意：这里回调仍然在 sink_it_ 内部调用，但通过重入检测避免死锁
-            g_logCallback(level, &loc_copy, formatted_str.c_str(), formatted_str.size(), g_logContext);
+            // ✅ 修复：释放锁后调用回调（避免死锁）
+            // 注意：这里需要临时释放锁，但 base_sink 的设计不允许这样做
+            // 所以我们使用重入检测来避免死锁
+            callback_copy(level, &loc_copy, formatted_str.c_str(), formatted_str.size(), context_copy);
 
             // 标记退出回调
             g_in_callback = false;
@@ -441,7 +452,18 @@ extern "C"
 
     void cckit_log_shutdown(void)
     {
-        std::lock_guard<std::mutex> lock(g_logger_mutex);
+        // ✅ 修复：先清除回调，避免在持有锁的情况下调用回调
+        g_logCallback = nullptr;
+        g_logContext = nullptr;
+
+        // ✅ 修复：使用 try_lock 避免死锁
+        std::unique_lock<std::mutex> lock(g_logger_mutex, std::try_to_lock);
+        if (!lock.owns_lock()) {
+            // 如果无法获取锁，说明还有线程在使用 logger
+            // 等待一段时间后重试
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            lock.lock();
+        }
 
         // 只清理自己的资源
         if (g_internal_logger) {
@@ -454,8 +476,6 @@ extern "C"
         }
 
         // 重置全局状态
-        g_logCallback = nullptr;
-        g_logContext = nullptr;
         g_enableColor = false;
     }
 

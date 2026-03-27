@@ -25,6 +25,11 @@ option(CCKIT_BUILD_MATH "Build math module (requires GLM)" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_LOGGING "Build logging module (requires spdlog)" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_UUID "Build UUID module (requires Boost.UUID)" ${CCKIT_BUILD_ALL})
 
+# 启用测试（必须在 add_subdirectory 之前调用）
+if(CCKIT_BUILD_TESTS)
+    enable_testing()
+endif()
+
 # ========================================
 # 添加子模块
 # ========================================

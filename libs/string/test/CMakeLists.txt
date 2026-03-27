@@ -39,9 +39,6 @@ target_link_libraries(test_string_performance
     cckit-string
 )
 
-# 启用测试
-enable_testing()
-
 # 添加测试
 add_test(NAME string_basic COMMAND test_string_basic)
 add_test(NAME string_performance COMMAND test_string_performance)

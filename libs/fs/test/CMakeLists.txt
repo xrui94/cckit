@@ -39,9 +39,6 @@ target_link_libraries(test_fs_performance
     cckit-fs
 )
 
-# 启用测试
-enable_testing()
-
 # 添加测试
 add_test(NAME fs_basic COMMAND test_fs_basic)
 add_test(NAME fs_performance COMMAND test_fs_performance)

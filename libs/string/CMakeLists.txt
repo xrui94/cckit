@@ -36,7 +36,6 @@ install(TARGETS cckit-string
 
 # 测试
 if(CCKIT_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(test)
 endif()
 

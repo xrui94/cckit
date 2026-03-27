@@ -39,9 +39,6 @@ target_link_libraries(test_uuid_performance
     cckit-uuid
 )
 
-# 启用测试
-enable_testing()
-
 # 添加测试
 add_test(NAME uuid_basic COMMAND test_uuid_basic)
 add_test(NAME uuid_performance COMMAND test_uuid_performance)

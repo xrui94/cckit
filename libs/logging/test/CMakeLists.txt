@@ -55,9 +55,6 @@ target_link_libraries(test_logging_use_after_free
         cckit-logging  # ✅ 链接主库
 )
 
-# 启用测试
-enable_testing()
-
 # 添加测试
 add_test(NAME logging_callback_thread_safety COMMAND test_logging_callback_thread_safety)
 add_test(NAME logging_deadlock_prevention COMMAND test_logging_deadlock_prevention)

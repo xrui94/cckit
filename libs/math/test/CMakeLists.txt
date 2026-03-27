@@ -39,9 +39,6 @@ target_link_libraries(test_math_performance
     cckit-math
 )
 
-# 启用测试
-enable_testing()
-
 # 添加测试
 add_test(NAME math_basic COMMAND test_math_basic)
 add_test(NAME math_performance COMMAND test_math_performance)

@@ -13,8 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ========================================
 # 模块化选项
 # ========================================
-option(CCKIT_BUILD_ALL_MODULE "Build all modules" OFF)
-option(CCKIT_BUILD_SHARED "Build as shared library" OFF)
+option(CCKIT_BUILD_SHARED "Build as shared library (Not supported yet!)" OFF)
 option(CCKIT_BUILD_TESTS "Build tests" OFF)
 option(CCKIT_BUILD_EXAMPLES "Build examples" OFF)
 
@@ -79,7 +78,7 @@ if(NOT CCKIT_HAS_MODULES)
         "Enable modules using one of the following options:\n"
         "  -DCCKIT_BUILD_ALL=ON (build all modules)\n"
         "  -DCCKIT_BUILD_STRING=ON\n"
-        "  -DCCKIT_BUILD_FS=ON\n"
+        "  -DCCKIT_BUILD_FS=ON (default: std::filesystem, use -DCCKIT_USE_GHC_FS=ON for ghc::filesystem)\n"
         "  -DCCKIT_BUILD_MATH=ON\n"
         "  -DCCKIT_BUILD_LOGGING=ON\n"
         "  -DCCKIT_BUILD_UUID=ON"
@@ -125,6 +124,12 @@ endif()
 
 if(CCKIT_BUILD_FS)
     install(DIRECTORY libs/fs/include/cckit
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endif()
+
+if(CCKIT_BUILD_GHC_FS)
+    install(DIRECTORY libs/ghc-fs/include/cckit
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 endif()

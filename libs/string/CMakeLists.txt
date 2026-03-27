@@ -1,12 +1,12 @@
 # cckit String Module
 if(CCKIT_BUILD_SHARED)
     add_library(cckit-string SHARED
-        src/string.cpp
+        src/String.cpp
     )
     target_compile_definitions(cckit-string PRIVATE CCKIT_BUILDING_DLL)
 else()
     add_library(cckit-string STATIC
-        src/string.cpp
+        src/String.cpp
     )
 endif()
 

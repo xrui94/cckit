@@ -3,12 +3,12 @@ find_package(Boost COMPONENTS uuid REQUIRED)
 
 if(CCKIT_BUILD_SHARED)
     add_library(cckit-uuid SHARED
-        src/uuid.cpp
+        src/Uuid.cpp
     )
     target_compile_definitions(cckit-uuid PRIVATE CCKIT_BUILDING_DLL)
 else()
     add_library(cckit-uuid STATIC
-        src/uuid.cpp
+        src/Uuid.cpp
     )
 endif()
 

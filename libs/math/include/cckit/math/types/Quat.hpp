@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Vec.hpp"
-#include "Mat.hpp"
+//#include "Mat.hpp"    // 和 Mat4.hpp 存在互相包含，因此不能包含，相关转换，请查看 exts/QuatExt.hpp
 #include "../Constants.hpp"
 
 namespace cckit::math
@@ -199,20 +199,20 @@ namespace cckit::math
             return Vec3Template<T>(result.x, result.y, result.z);
         }
 
-        // 转换为旋转矩阵
-        Mat4Template<T> toMat4() const {
-            QuatTemplate q = normalized();
-            T xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
-            T xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
-            T wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
+        //// 转换为旋转矩阵
+        //Mat4Template<T> toMat4() const {
+        //    QuatTemplate q = normalized();
+        //    T xx = q.x * q.x, yy = q.y * q.y, zz = q.z * q.z;
+        //    T xy = q.x * q.y, xz = q.x * q.z, yz = q.y * q.z;
+        //    T wx = q.w * q.x, wy = q.w * q.y, wz = q.w * q.z;
 
-            return Mat4Template<T>(
-                T(1) - T(2) * (yy + zz),     T(2) * (xy - wz),           T(2) * (xz + wy),           T(0),
-                T(2) * (xy + wz),            T(1) - T(2) * (xx + zz),    T(2) * (yz - wx),           T(0),
-                T(2) * (xz - wy),            T(2) * (yz + wx),           T(1) - T(2) * (xx + yy),    T(0),
-                T(0),                       T(0),                       T(0),                       T(1)
-            );
-        }
+        //    return Mat4Template<T>(
+        //        T(1) - T(2) * (yy + zz),     T(2) * (xy - wz),           T(2) * (xz + wy),           T(0),
+        //        T(2) * (xy + wz),            T(1) - T(2) * (xx + zz),    T(2) * (yz - wx),           T(0),
+        //        T(2) * (xz - wy),            T(2) * (yz + wx),           T(1) - T(2) * (xx + yy),    T(0),
+        //        T(0),                       T(0),                       T(0),                       T(1)
+        //    );
+        //}
 
         // 球面线性插值
         static QuatTemplate slerp(const QuatTemplate& a, const QuatTemplate& b, T t) {
@@ -294,41 +294,43 @@ namespace cckit::math
             return ss.str();
         }
 
-        // 从旋转矩阵提取四元数
-        static QuatTemplate fromMat4(const Mat4Template<T>& m) {
-            // 从 4x4 矩阵提取旋转部分（3x3）
-            T trace = m(0, 0) + m(1, 1) + m(2, 2);
+		/// 和 Mat4.hpp 存在互相包含，因此，不再在这里实现，而是在 QuatExt.hpp 中实现。
+        //// 从旋转矩阵提取四元数
+        //static QuatTemplate fromMat4(const Mat4Template<T>& m) {
+        //    // 从 4x4 矩阵提取旋转部分（3x3）
+        //    T trace = m(0, 0) + m(1, 1) + m(2, 2);
 
-            if (trace > T(0)) {
-                T s = std::sqrt(trace + T(1)) * T(2); // s = 4 * w
-                T w = T(0.25) * s;
-                T x = (m(2, 1) - m(1, 2)) / s;
-                T y = (m(0, 2) - m(2, 0)) / s;
-                T z = (m(1, 0) - m(0, 1)) / s;
-                return QuatTemplate(x, y, z, w);
-            } else if ((m(0, 0) > m(1, 1)) && (m(0, 0) > m(2, 2))) {
-                T s = std::sqrt(T(1) + m(0, 0) - m(1, 1) - m(2, 2)) * T(2); // s = 4 * x
-                T w = (m(2, 1) - m(1, 2)) / s;
-                T x = T(0.25) * s;
-                T y = (m(0, 1) + m(1, 0)) / s;
-                T z = (m(0, 2) + m(2, 0)) / s;
-                return QuatTemplate(x, y, z, w);
-            } else if (m(1, 1) > m(2, 2)) {
-                T s = std::sqrt(T(1) + m(1, 1) - m(0, 0) - m(2, 2)) * T(2); // s = 4 * y
-                T w = (m(0, 2) - m(2, 0)) / s;
-                T x = (m(0, 1) + m(1, 0)) / s;
-                T y = T(0.25) * s;
-                T z = (m(1, 2) + m(2, 1)) / s;
-                return QuatTemplate(x, y, z, w);
-            } else {
-                T s = std::sqrt(T(1) + m(2, 2) - m(0, 0) - m(1, 1)) * T(2); // s = 4 * z
-                T w = (m(1, 0) - m(0, 1)) / s;
-                T x = (m(0, 2) + m(2, 0)) / s;
-                T y = (m(1, 2) + m(2, 1)) / s;
-                T z = T(0.25) * s;
-                return QuatTemplate(x, y, z, w);
-            }
-        }
+        //    if (trace > T(0)) {
+        //        T s = std::sqrt(trace + T(1)) * T(2); // s = 4 * w
+        //        T w = T(0.25) * s;
+        //        T x = (m(2, 1) - m(1, 2)) / s;
+        //        T y = (m(0, 2) - m(2, 0)) / s;
+        //        T z = (m(1, 0) - m(0, 1)) / s;
+        //        return QuatTemplate(x, y, z, w);
+        //    } else if ((m(0, 0) > m(1, 1)) && (m(0, 0) > m(2, 2))) {
+        //        T s = std::sqrt(T(1) + m(0, 0) - m(1, 1) - m(2, 2)) * T(2); // s = 4 * x
+        //        T w = (m(2, 1) - m(1, 2)) / s;
+        //        T x = T(0.25) * s;
+        //        T y = (m(0, 1) + m(1, 0)) / s;
+        //        T z = (m(0, 2) + m(2, 0)) / s;
+        //        return QuatTemplate(x, y, z, w);
+        //    } else if (m(1, 1) > m(2, 2)) {
+        //        T s = std::sqrt(T(1) + m(1, 1) - m(0, 0) - m(2, 2)) * T(2); // s = 4 * y
+        //        T w = (m(0, 2) - m(2, 0)) / s;
+        //        T x = (m(0, 1) + m(1, 0)) / s;
+        //        T y = T(0.25) * s;
+        //        T z = (m(1, 2) + m(2, 1)) / s;
+        //        return QuatTemplate(x, y, z, w);
+        //    } else {
+        //        T s = std::sqrt(T(1) + m(2, 2) - m(0, 0) - m(1, 1)) * T(2); // s = 4 * z
+        //        T w = (m(1, 0) - m(0, 1)) / s;
+        //        T x = (m(0, 2) + m(2, 0)) / s;
+        //        T y = (m(1, 2) + m(2, 1)) / s;
+        //        T z = T(0.25) * s;
+        //        return QuatTemplate(x, y, z, w);
+        //    }
+        //}
+
     };
 
     // ========================================

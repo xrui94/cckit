@@ -28,29 +28,29 @@ else()
 endif()
 
 # 测试可执行文件
-add_executable(test_callback_thread_safety
-    test_callback_thread_safety.cpp
+add_executable(test_logging_callback_thread_safety
+    test_logging_callback_thread_safety.cpp
 )
 
-target_link_libraries(test_callback_thread_safety
+target_link_libraries(test_logging_callback_thread_safety
     PRIVATE
         cckit-logging  # ✅ 链接主库
 )
 
-add_executable(test_deadlock_prevention
-    test_deadlock_prevention.cpp
+add_executable(test_logging_deadlock_prevention
+    test_logging_deadlock_prevention.cpp
 )
 
-target_link_libraries(test_deadlock_prevention
+target_link_libraries(test_logging_deadlock_prevention
     PRIVATE
         cckit-logging  # ✅ 链接主库
 )
 
-add_executable(test_use_after_free
-    test_use_after_free.cpp
+add_executable(test_logging_use_after_free
+    test_logging_use_after_free.cpp
 )
 
-target_link_libraries(test_use_after_free
+target_link_libraries(test_logging_use_after_free
     PRIVATE
         cckit-logging  # ✅ 链接主库
 )
@@ -59,17 +59,17 @@ target_link_libraries(test_use_after_free
 enable_testing()
 
 # 添加测试
-add_test(NAME callback_thread_safety COMMAND test_callback_thread_safety)
-add_test(NAME deadlock_prevention COMMAND test_deadlock_prevention)
-add_test(NAME use_after_free COMMAND test_use_after_free)
+add_test(NAME logging_callback_thread_safety COMMAND test_logging_callback_thread_safety)
+add_test(NAME logging_deadlock_prevention COMMAND test_logging_deadlock_prevention)
+add_test(NAME logging_use_after_free COMMAND test_logging_use_after_free)
 
 # 设置测试超时（秒）
-set_tests_properties(callback_thread_safety PROPERTIES TIMEOUT 30)
-set_tests_properties(deadlock_prevention PROPERTIES TIMEOUT 30)
-set_tests_properties(use_after_free PROPERTIES TIMEOUT 30)
+set_tests_properties(logging_callback_thread_safety PROPERTIES TIMEOUT 30)
+set_tests_properties(logging_deadlock_prevention PROPERTIES TIMEOUT 30)
+set_tests_properties(logging_use_after_free PROPERTIES TIMEOUT 30)
 
 # 输出测试信息
 message(STATUS "CCKIT Logging Tests:")
-message(STATUS "  - test_callback_thread_safety")
-message(STATUS "  - test_deadlock_prevention")
-message(STATUS "  - test_use_after_free")
+message(STATUS "  - test_logging_callback_thread_safety")
+message(STATUS "  - test_logging_deadlock_prevention")
+message(STATUS "  - test_logging_use_after_free")

@@ -13,6 +13,7 @@
 #include "Vec3.hpp"
 #include "Vec4.hpp"
 #include "Mat3.hpp"
+#include "Quat.hpp"
 
 #include <cstring>
 #include <cassert>
@@ -81,6 +82,15 @@ namespace cckit::math
             );
         }
 
+        static constexpr Mat4Template zero() {
+            return Mat4Template(
+                T(0), T(0), T(0), T(0),
+                T(0), T(0), T(0), T(0),
+                T(0), T(0), T(0), T(0),
+                T(0), T(0), T(0), T(0)
+            );
+        }
+
         static Mat4Template fromTranslation(const Vec3Template<T>& t) {
             auto m = identity();
             m(0, 3) = t.x;
@@ -121,6 +131,29 @@ namespace cckit::math
                 m3(1, 0), m3(1, 1), m3(1, 2), T(0),
                 m3(2, 0), m3(2, 1), m3(2, 2), T(0),
                 T(0),     T(0),     T(0),     T(1)
+            );
+        }
+
+        // 从四元数创建旋转矩阵
+        static Mat4Template fromRotation(const QuatTemplate<T>& q) {
+            // 确保四元数已归一化
+            QuatTemplate<T> normalizedQ = q.normalized();
+
+            T xx = normalizedQ.x * normalizedQ.x;
+            T yy = normalizedQ.y * normalizedQ.y;
+            T zz = normalizedQ.z * normalizedQ.z;
+            T xy = normalizedQ.x * normalizedQ.y;
+            T xz = normalizedQ.x * normalizedQ.z;
+            T yz = normalizedQ.y * normalizedQ.z;
+            T wx = normalizedQ.w * normalizedQ.x;
+            T wy = normalizedQ.w * normalizedQ.y;
+            T wz = normalizedQ.w * normalizedQ.z;
+
+            return Mat4Template(
+                T(1) - T(2) * (yy + zz), T(2) * (xy - wz), T(2) * (xz + wy), T(0),
+                T(2) * (xy + wz), T(1) - T(2) * (xx + zz), T(2) * (yz - wx), T(0),
+                T(2) * (xz - wy), T(2) * (yz + wx), T(1) - T(2) * (xx + yy), T(0),
+                T(0), T(0), T(0), T(1)
             );
         }
 
@@ -351,6 +384,31 @@ namespace cckit::math
             res(3, 3) = T(1);
 
             return res;
+        }
+
+        T determinant() const {
+            // 使用拉普拉斯展开计算 4x4 行列式
+            return
+                (*this)(0, 0) * (
+                    (*this)(1, 1) * ((*this)(2, 2) * (*this)(3, 3) - (*this)(3, 2) * (*this)(2, 3)) -
+                    (*this)(1, 2) * ((*this)(2, 1) * (*this)(3, 3) - (*this)(3, 1) * (*this)(2, 3)) +
+                    (*this)(1, 3) * ((*this)(2, 1) * (*this)(3, 2) - (*this)(3, 1) * (*this)(2, 2))
+                    ) -
+                (*this)(0, 1) * (
+                    (*this)(1, 0) * ((*this)(2, 2) * (*this)(3, 3) - (*this)(3, 2) * (*this)(2, 3)) -
+                    (*this)(1, 2) * ((*this)(2, 0) * (*this)(3, 3) - (*this)(3, 0) * (*this)(2, 3)) +
+                    (*this)(1, 3) * ((*this)(2, 0) * (*this)(3, 2) - (*this)(3, 0) * (*this)(2, 2))
+                    ) +
+                (*this)(0, 2) * (
+                    (*this)(1, 0) * ((*this)(2, 1) * (*this)(3, 3) - (*this)(3, 1) * (*this)(2, 3)) -
+                    (*this)(1, 1) * ((*this)(2, 0) * (*this)(3, 3) - (*this)(3, 0) * (*this)(2, 3)) +
+                    (*this)(1, 3) * ((*this)(2, 0) * (*this)(3, 1) - (*this)(3, 0) * (*this)(2, 1))
+                    ) -
+                (*this)(0, 3) * (
+                    (*this)(1, 0) * ((*this)(2, 1) * (*this)(3, 2) - (*this)(3, 1) * (*this)(2, 2)) -
+                    (*this)(1, 1) * ((*this)(2, 0) * (*this)(3, 2) - (*this)(3, 0) * (*this)(2, 2)) +
+                    (*this)(1, 2) * ((*this)(2, 0) * (*this)(3, 1) - (*this)(3, 0) * (*this)(2, 1))
+                    );
         }
 
         // 字符串表示

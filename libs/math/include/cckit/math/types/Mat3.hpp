@@ -76,6 +76,14 @@ namespace cckit::math
             );
         }
 
+        static constexpr Mat3Template zero() {
+            return Mat3Template(
+                T(0), T(0), T(0),
+                T(0), T(0), T(0),
+                T(0), T(0), T(0)
+            );
+        }
+
         static Mat3Template fromRotation(T angleInRad) {
             T c = std::cos(angleInRad);
             T s = std::sin(angleInRad);
@@ -131,6 +139,11 @@ namespace cckit::math
                 }
             }
             return res;
+        }
+
+        // 矩阵与向量乘法运算符
+        Vec3Template<T> operator*(const Vec3Template<T>& v) const {
+            return transformVector(v);
         }
 
         constexpr Mat3Template operator*(T scalar) const {

@@ -23,3 +23,6 @@
 #include "types/VecArray.hpp"
 #include "types/Mat.hpp"
 #include "types/Quat.hpp"
+
+// 核心扩展 (自动加载常用转换)
+#include "exts/QuatExt.hpp"

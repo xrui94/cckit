@@ -16,6 +16,25 @@
 namespace cckit::math
 {
 
+    /// @brief 近似相等比较（便捷别名）
+    /// @param a 第一个值
+    /// @param b 第二个值
+    /// @param eps 容差（可选，默认使用类型默认容差）
+    /// @return 是否近似相等
+    template<typename T>
+    constexpr bool isEqual(T a, T b, T eps = getTolerance<T>()) {
+        return isApproxEqual(a, b, eps);
+    }
+
+    /// @brief 近似为零检查（便捷别名）
+    /// @param a 要检查的值
+    /// @param eps 容差（可选，默认使用类型默认容差）
+    /// @return 是否近似为零
+    template<typename T>
+    constexpr bool isZero(T a, T eps = getTolerance<T>()) {
+        return isApproxZero(a, eps);
+    }
+
     // template<typename T>
     // constexpr T radians(T degrees) {
     //     return degrees * DEG_TO_RAD;
@@ -33,6 +52,16 @@ namespace cckit::math
 
     template<typename T>
     inline T toDegrees(T angle) {
+        return angle * RAD_TO_DEG<T>;
+    }
+
+    template<typename T>
+    inline T degToRad(T angle) {
+        return angle * DEG_TO_RAD<T>;
+    }
+
+    template<typename T>
+    inline T radToDeg(T angle) {
         return angle * RAD_TO_DEG<T>;
     }
 

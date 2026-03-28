@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.15...3.29)
 
 project(cckit
-    VERSION 1.0.0
+    VERSION 0.1.0
     LANGUAGES C CXX
     DESCRIPTION "C++ Common Library - Modular library"
 )
@@ -24,6 +24,7 @@ option(CCKIT_BUILD_FS "Build filesystem module" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_MATH "Build math module (requires GLM)" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_LOGGING "Build logging module (requires spdlog)" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_UUID "Build UUID module (requires Boost.UUID)" ${CCKIT_BUILD_ALL})
+option(CCKIT_BUILD_RUNTIME "Build runtime module" ${CCKIT_BUILD_ALL})
 
 # 启用测试（必须在 add_subdirectory 之前调用）
 if(CCKIT_BUILD_TESTS)
@@ -53,6 +54,10 @@ if(CCKIT_BUILD_UUID)
     add_subdirectory(libs/uuid)
 endif()
 
+if(CCKIT_BUILD_RUNTIME)
+    add_subdirectory(libs/runtime)
+endif()
+
 # ========================================
 # 创建统一的目标（可选）
 # ========================================
@@ -75,6 +80,9 @@ endif()
 if(CCKIT_BUILD_UUID)
     set(CCKIT_HAS_MODULES TRUE)
 endif()
+if(CCKIT_BUILD_RUNTIME)
+    set(CCKIT_HAS_MODULES TRUE)
+endif()
 
 # 如果没有启用任何模块，给出错误提示
 if(NOT CCKIT_HAS_MODULES)
@@ -86,7 +94,8 @@ if(NOT CCKIT_HAS_MODULES)
         "  -DCCKIT_BUILD_FS=ON (default: std::filesystem, use -DCCKIT_USE_GHC_FS=ON for ghc::filesystem)\n"
         "  -DCCKIT_BUILD_MATH=ON\n"
         "  -DCCKIT_BUILD_LOGGING=ON\n"
-        "  -DCCKIT_BUILD_UUID=ON"
+        "  -DCCKIT_BUILD_UUID=ON\n"
+        "  -DCCKIT_BUILD_RUNTIME=ON"
     )
 endif()
 
@@ -111,6 +120,10 @@ endif()
 
 if(CCKIT_BUILD_UUID)
     target_link_libraries(cckit INTERFACE cckit-uuid)
+endif()
+
+if(CCKIT_BUILD_RUNTIME)
+    target_link_libraries(cckit INTERFACE cckit-runtime)
 endif()
 
 add_library(cckit::cckit ALIAS cckit)
@@ -153,6 +166,12 @@ endif()
 
 if(CCKIT_BUILD_UUID)
     install(DIRECTORY libs/uuid/include/cckit
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endif()
+
+if(CCKIT_BUILD_RUNTIME)
+    install(DIRECTORY libs/runtime/include/cckit
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 endif()

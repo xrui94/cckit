@@ -1,0 +1,22 @@
+# 测试构建产物
+runtime_tests
+runtime_tests.exe
+*.o
+*.obj
+*.a
+*.lib
+
+# 测试输出
+test_results.xml
+test_results.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

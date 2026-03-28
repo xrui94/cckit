@@ -1,10 +1,12 @@
-.vscode
-.vs
-.idea
-.coder
-.trae
-.arts
-.codeartsdoer
+.vscode/
+.vs/
+.idea/
+.coder/
+.trae/
+.arts/
+.codeartsdoer/
 
-build
-dist
+build/
+dist/
+
+*.log

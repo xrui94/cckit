@@ -88,6 +88,38 @@ namespace cckit::math
             return Vec4Template(-x, -y, -z, -w);
         }
 
+        constexpr Vec4Template& operator+=(const Vec4Template& other) {
+            x += other.x;
+            y += other.y;
+            z += other.z;
+            w += other.w;
+            return *this;
+        }
+
+        constexpr Vec4Template& operator-=(const Vec4Template& other) {
+            x -= other.x;
+            y -= other.y;
+            z -= other.z;
+            w -= other.w;
+            return *this;
+        }
+
+        constexpr Vec4Template& operator*=(T s) {
+            x *= s;
+            y *= s;
+            z *= s;
+            w *= s;
+            return *this;
+        }
+
+        constexpr Vec4Template& operator/=(T s) {
+            x /= s;
+            y /= s;
+            z /= s;
+            w /= s;
+            return *this;
+        }
+
         // 点积
         constexpr T dot(const Vec4Template& other) const {
             return x * other.x + y * other.y + z * other.z + w * other.w;
@@ -100,6 +132,65 @@ namespace cckit::math
 
         constexpr T lengthSquared() const {
             return x * x + y * y + z * z + w * w;
+        }
+
+        // 归一化
+        Vec4Template normalized() const {
+            T len = length();
+            if (len > getTolerance<T>()) {
+                return Vec4Template(x / len, y / len, z / len, w / len);
+            }
+            return zero();
+        }
+
+        void normalize() {
+            T len = length();
+            if (len > getTolerance<T>()) {
+                x /= len;
+                y /= len;
+                z /= len;
+                w /= len;
+            }
+        }
+
+        // 距离
+        T distance(const Vec4Template& other) const {
+            return (*this - other).length();
+        }
+
+        // 线性插值
+        static Vec4Template lerp(const Vec4Template& a, const Vec4Template& b, T t) {
+            return a + (b - a) * t;
+        }
+
+        // 比较
+        constexpr bool operator==(const Vec4Template& other) const {
+            const T tol = getTolerance<T>();
+            return isApproxEqual(x, other.x, tol) &&
+                   isApproxEqual(y, other.y, tol) &&
+                   isApproxEqual(z, other.z, tol) &&
+                   isApproxEqual(w, other.w, tol);
+        }
+
+        constexpr bool operator!=(const Vec4Template& other) const {
+            return !(*this == other);
+        }
+
+        // 逐分量比较（所有分量都满足条件）
+        constexpr bool operator<(const Vec4Template& other) const {
+            return x < other.x && y < other.y && z < other.z && w < other.w;
+        }
+
+        constexpr bool operator>(const Vec4Template& other) const {
+            return x > other.x && y > other.y && z > other.z && w > other.w;
+        }
+
+        constexpr bool operator<=(const Vec4Template& other) const {
+            return x <= other.x && y <= other.y && z <= other.z && w <= other.w;
+        }
+
+        constexpr bool operator>=(const Vec4Template& other) const {
+            return x >= other.x && y >= other.y && z >= other.z && w >= other.w;
         }
 
         // 下标访问

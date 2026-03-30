@@ -156,6 +156,23 @@ namespace cckit::math
             return !(*this == other);
         }
 
+        // 逐分量比较（所有分量都满足条件）
+        constexpr bool operator<(const Vec2Template& other) const {
+            return x < other.x && y < other.y;
+        }
+
+        constexpr bool operator>(const Vec2Template& other) const {
+            return x > other.x && y > other.y;
+        }
+
+        constexpr bool operator<=(const Vec2Template& other) const {
+            return x <= other.x && y <= other.y;
+        }
+
+        constexpr bool operator>=(const Vec2Template& other) const {
+            return x >= other.x && y >= other.y;
+        }
+
         // 下标访问
         T& operator[](size_t i) {
             return (&x)[i];

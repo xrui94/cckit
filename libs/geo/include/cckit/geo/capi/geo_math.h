@@ -14,12 +14,12 @@ extern "C" {
 /**
  * @brief Radians to degrees
  */
-CCKIT_GEO_API double cckit_geo_radians_to_degrees(double radians);
+CCKIT_API double cckit_geo_radians_to_degrees(double radians);
 
 /**
  * @brief Degrees to radians
  */
-CCKIT_GEO_API double cckit_geo_degrees_to_radians(double degrees);
+CCKIT_API double cckit_geo_degrees_to_radians(double degrees);
 
 #ifdef __cplusplus
 }

@@ -26,22 +26,22 @@ typedef struct {
 /**
  * @brief Create Cartographic from radians
  */
-CCKIT_GEO_API cckit_cartographic_t cckit_cartographic_from_radians(double longitude, double latitude, double height);
+CCKIT_API cckit_cartographic_t cckit_cartographic_from_radians(double longitude, double latitude, double height);
 
 /**
  * @brief Create Cartographic from degrees
  */
-CCKIT_GEO_API cckit_cartographic_t cckit_cartographic_from_degrees(double longitude, double latitude, double height);
+CCKIT_API cckit_cartographic_t cckit_cartographic_from_degrees(double longitude, double latitude, double height);
 
 /**
  * @brief Convert Cartesian3 to Cartographic
  */
-CCKIT_GEO_API cckit_cartographic_t cckit_cartographic_from_cartesian(cckit_cartesian3_t cartesian);
+CCKIT_API cckit_cartographic_t cckit_cartographic_from_cartesian(cckit_cartesian3_t cartesian);
 
 /**
  * @brief Convert Cartographic to Cartesian3
  */
-CCKIT_GEO_API cckit_cartesian3_t cckit_cartographic_to_cartesian(cckit_cartographic_t cartographic);
+CCKIT_API cckit_cartesian3_t cckit_cartographic_to_cartesian(cckit_cartographic_t cartographic);
 
 #ifdef __cplusplus
 }

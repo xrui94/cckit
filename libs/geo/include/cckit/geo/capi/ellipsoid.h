@@ -34,12 +34,12 @@ typedef struct {
 /**
  * @brief Get WGS84 ellipsoid
  */
-CCKIT_GEO_API cckit_ellipsoid_t cckit_ellipsoid_wgs84(void);
+CCKIT_API cckit_ellipsoid_t cckit_ellipsoid_wgs84(void);
 
 /**
  * @brief Create custom ellipsoid
  */
-CCKIT_GEO_API cckit_ellipsoid_t cckit_ellipsoid_create(double x_radius, double y_radius, double z_radius);
+CCKIT_API cckit_ellipsoid_t cckit_ellipsoid_create(double x_radius, double y_radius, double z_radius);
 
 #ifdef __cplusplus
 }

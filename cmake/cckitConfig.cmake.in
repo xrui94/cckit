@@ -2,7 +2,7 @@
 
 include(CMakeFindDependencyMacro)
 
-# 查找依赖项
+# Find dependencies
 if(@CCKIT_BUILD_MATH@)
     find_dependency(glm CONFIG REQUIRED)
 endif()
@@ -19,34 +19,8 @@ if(@CCKIT_USE_GHC_FS@)
     find_dependency(ghc_filesystem CONFIG REQUIRED)
 endif()
 
-# 包含所有模块的 targets
+# Include all module targets
+# Note: cckit::cckit is already defined in cckitTargets.cmake
 include("${CMAKE_CURRENT_LIST_DIR}/cckitTargets.cmake")
-
-# 创建统一的 cckit::cckit alias（链接所有启用的模块）
-add_library(cckit::cckit INTERFACE IMPORTED)
-
-if(@CCKIT_BUILD_STRING@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-string)
-endif()
-
-if(@CCKIT_BUILD_FS@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-fs)
-endif()
-
-if(@CCKIT_BUILD_MATH@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-math)
-endif()
-
-if(@CCKIT_BUILD_LOGGING@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-logging)
-endif()
-
-if(@CCKIT_BUILD_UUID@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-uuid)
-endif()
-
-if(@CCKIT_BUILD_RUNTIME@)
-    target_link_libraries(cckit::cckit INTERFACE cckit::cckit-runtime)
-endif()
 
 check_required_components(cckit)

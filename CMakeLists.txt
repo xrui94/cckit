@@ -26,6 +26,7 @@ option(CCKIT_BUILD_LOGGING "Build logging module (requires spdlog)" ${CCKIT_BUIL
 option(CCKIT_BUILD_UUID "Build UUID module (requires Boost.UUID)" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_RUNTIME "Build runtime module" ${CCKIT_BUILD_ALL})
 option(CCKIT_BUILD_RANDOM "Build random module" ${CCKIT_BUILD_ALL})
+option(CCKIT_BUILD_GEO "Build geo module (GIS utilities)" ${CCKIT_BUILD_ALL})
 
 # 启用测试（必须在 add_subdirectory 之前调用）
 if(CCKIT_BUILD_TESTS)
@@ -63,6 +64,10 @@ if(CCKIT_BUILD_RANDOM)
     add_subdirectory(libs/random)
 endif()
 
+if(CCKIT_BUILD_GEO)
+    add_subdirectory(libs/geo)
+endif()
+
 # ========================================
 # 创建统一的目标（可选）
 # ========================================
@@ -91,6 +96,9 @@ endif()
 if(CCKIT_BUILD_RANDOM)
     set(CCKIT_HAS_MODULES TRUE)
 endif()
+if(CCKIT_BUILD_GEO)
+    set(CCKIT_HAS_MODULES TRUE)
+endif()
 
 # 如果没有启用任何模块，给出错误提示
 if(NOT CCKIT_HAS_MODULES)
@@ -104,7 +112,8 @@ if(NOT CCKIT_HAS_MODULES)
         "  -DCCKIT_BUILD_LOGGING=ON\n"
         "  -DCCKIT_BUILD_UUID=ON\n"
         "  -DCCKIT_BUILD_RUNTIME=ON\n"
-        "  -DCCKIT_BUILD_RANDOM=ON"
+        "  -DCCKIT_BUILD_RANDOM=ON\n"
+        "  -DCCKIT_BUILD_GEO=ON"
     )
 endif()
 
@@ -139,12 +148,21 @@ if(CCKIT_BUILD_RANDOM)
     target_link_libraries(cckit INTERFACE cckit-random)
 endif()
 
+if(CCKIT_BUILD_GEO)
+    target_link_libraries(cckit INTERFACE cckit-geo)
+endif()
+
 add_library(cckit::cckit ALIAS cckit)
 
 # ========================================
 # 安装
 # ========================================
 include(GNUInstallDirs)
+
+# 安装 cckit 主目标（INTERFACE 库）
+install(TARGETS cckit
+    EXPORT cckit-targets
+)
 
 # 安装所有头文件（合并各个模块的头文件）
 if(CCKIT_BUILD_STRING)
@@ -191,6 +209,12 @@ endif()
 
 if(CCKIT_BUILD_RANDOM)
     install(DIRECTORY libs/random/include/cckit
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endif()
+
+if(CCKIT_BUILD_GEO)
+    install(DIRECTORY libs/geo/include/cckit
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
 endif()

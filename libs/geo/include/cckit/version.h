@@ -1,0 +1,11 @@
+// version.h - 版本信息
+#pragma once
+
+#define CCKIT_GEO_VERSION_MAJOR 0
+#define CCKIT_GEO_VERSION_MINOR 1
+#define CCKIT_GEO_VERSION_PATCH 0
+
+#define CCKIT_GEO_VERSION \
+    ((CCKIT_GEO_VERSION_MAJOR << 16) | \
+     (CCKIT_GEO_VERSION_MINOR << 8) | \
+     (CCKIT_GEO_VERSION_PATCH))

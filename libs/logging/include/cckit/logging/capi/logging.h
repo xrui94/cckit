@@ -1,7 +1,7 @@
 // log.h - 日志 C 接口
 #pragma once
 
-#include "../export.h"
+#include "../../export.h"
 
 #include <stdint.h>
 #include <stddef.h>

@@ -85,6 +85,21 @@ namespace cckit::uuid
             }
             return false;
         }
+
+        bool operator>(const Uuid& other) const
+        {
+            return other < *this;
+        }
+
+        bool operator<=(const Uuid& other) const
+        {
+            return !(other < *this);
+        }
+
+        bool operator>=(const Uuid& other) const
+        {
+            return !(*this < other);
+        }
         
         // 隐式转换：允许无缝传递给需要底层 POD 的 C API
         operator const cckit_uuid_t&() const { return _data; }

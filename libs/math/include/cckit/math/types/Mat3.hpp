@@ -236,6 +236,20 @@ namespace cckit::math
             );
         }
 
+        // 判断是否为单位矩阵
+        bool isIdentity() const {
+            const T tol = getTolerance<T>();
+            for (size_t i = 0; i < 3; ++i) {
+                for (size_t j = 0; j < 3; ++j) {
+                    T expected = (i == j) ? T(1) : T(0);
+                    if (!isApproxEqual((*this)(i, j), expected, tol)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         // 字符串表示
         std::string toString() const {
             std::ostringstream ss;

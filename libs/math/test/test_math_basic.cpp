@@ -187,6 +187,26 @@ void test_mat3_operations()
         }
     }
 
+    // isIdentity 测试
+    assert(identity.isIdentity());  // 单位矩阵应该返回 true
+    assert(!zero.isIdentity());     // 零矩阵应该返回 false
+
+    // 测试非单位矩阵
+    Mat3f nonIdentity = Mat3f(
+        1.0f, 0.0f, 0.0f,
+        0.0f, 2.0f, 0.0f,  // 对角线元素不是 1
+        0.0f, 0.0f, 1.0f
+    );
+    assert(!nonIdentity.isIdentity());
+
+    // 测试近似单位矩阵（在容差范围内）
+    Mat3f approxIdentity = Mat3f(
+        1.0f, 1e-7f, 0.0f,
+        1e-7f, 1.0f, 1e-7f,
+        0.0f, 1e-7f, 1.0f
+    );
+    assert(approxIdentity.isIdentity());  // 在容差范围内应该返回 true
+
     std::cout << "✅ Mat3 操作测试通过" << std::endl;
 }
 
@@ -222,6 +242,32 @@ void test_mat4_operations()
     // 行列式
     float det = identity.determinant();
     assert(std::abs(det - 1.0f) < 1e-6f);
+
+    // isIdentity 测试
+    assert(identity.isIdentity());  // 单位矩阵应该返回 true
+    assert(!zero.isIdentity());     // 零矩阵应该返回 false
+
+    // 测试非单位矩阵
+    Mat4f nonIdentity = Mat4f(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f, 0.0f, 0.0f,  // 对角线元素不是 1
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+    assert(!nonIdentity.isIdentity());
+
+    // 测试近似单位矩阵（在容差范围内）
+    Mat4f approxIdentity = Mat4f(
+        1.0f, 1e-7f, 0.0f, 0.0f,
+        1e-7f, 1.0f, 1e-7f, 0.0f,
+        0.0f, 1e-7f, 1.0f, 1e-7f,
+        0.0f, 0.0f, 1e-7f, 1.0f
+    );
+    assert(approxIdentity.isIdentity());  // 在容差范围内应该返回 true
+
+    // 测试平移矩阵（不是单位矩阵）
+    Mat4f translation = Mat4f::fromTranslation(Vec3f(1.0f, 2.0f, 3.0f));
+    assert(!translation.isIdentity());
 
     std::cout << "✅ Mat4 操作测试通过" << std::endl;
 }

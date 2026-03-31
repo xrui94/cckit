@@ -95,6 +95,21 @@ void test_comparison_operators()
     assert(*u1 < *u2);
     assert(!(*u2 < *u1));
 
+    // 测试大于运算符
+    assert(*u2 > *u1);
+    assert(!(*u1 > *u2));
+    assert(!(*u1 > *u1));
+
+    // 测试小于等于运算符
+    assert(*u1 <= *u2);
+    assert(*u1 <= *u1);  // 相等时也成立
+    assert(!(*u2 <= *u1));
+
+    // 测试大于等于运算符
+    assert(*u2 >= *u1);
+    assert(*u1 >= *u1);  // 相等时也成立
+    assert(!(*u1 >= *u2));
+
     std::cout << "✅ 比较运算符测试通过" << std::endl;
 }
 

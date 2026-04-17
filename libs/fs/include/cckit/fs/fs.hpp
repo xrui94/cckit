@@ -94,6 +94,15 @@ namespace cckit::fs
         return resultStr;
     }
 
+    inline std::string resolveRelativePath(std::string_view baseFileAbsolute, std::string_view relativePath) {
+        std::string baseFileAbsoluteStr = std::string(baseFileAbsolute);
+        std::string relativePathStr = std::string(relativePath);
+        char* result = cckit_fs_resolve_relative_path(baseFileAbsoluteStr.c_str(), relativePathStr.c_str());
+        std::string resultStr(result ? result : "");
+        cckit_fs_free_string(result);
+        return resultStr;
+    }
+
     // ========================================
     // 文件操作
     // ========================================

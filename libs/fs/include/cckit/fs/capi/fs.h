@@ -103,6 +103,15 @@ extern "C" {
      */
     CCKIT_API char* cckit_fs_get_directory_name(const char* path);
 
+    /**
+     * @brief 根据“基准文件”的绝对路径和指定的“相对路径”，计算相对路径的真实绝对路径
+     *
+     * @param baseFileAbsolute 基准文件的绝对路径 (例如: /home/user/project/config/settings.json)
+     * @param relativePath     相对于基准文件的路径 (例如: ../data/image.png)
+     * @return std::filesystem::path 目标的绝对路径
+     */
+    CCKIT_API char* cckit_fs_resolve_relative_path(const char* baseFileAbsolute, const char* relativePath);
+
     // ========================================
     // 文件操作
     // ========================================

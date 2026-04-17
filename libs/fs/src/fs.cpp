@@ -318,6 +318,21 @@ extern "C" {
         }
     }
 
+    char* cckit_fs_resolve_relative_path(const char* baseFileAbsolute, const char* relativePath)
+    {
+        // fs::path 的构造函数支持 std::string_view
+        fs::path baseDir(baseFileAbsolute);
+        fs::path relPath(relativePath);
+
+        // 1. 获取目录
+        // 2. 拼接并规范化
+        fs::path relativeAbsPath = fs::weakly_canonical(baseDir.parent_path() / relPath);
+
+        char* result = strdup(relativeAbsPath.generic_string().c_str());
+
+        return result;
+    }
+
     // ========================================
     // 文件操作实现
     // ========================================

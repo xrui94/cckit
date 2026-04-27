@@ -159,6 +159,21 @@ extern "C" {
     CCKIT_API bool cckit_fs_create_directory(const char* path);
 
     /**
+     * @brief 创建符号链接
+     * @param sourcePath 源路径（文件或目录）
+     * @param targetPath 目标路径（符号链接将被创建在此处）
+     * @return true 如果创建成功
+     */
+    CCKIT_API bool cckit_fs_create_symlink(const char* sourcePath, const char* targetPath);
+
+    /**
+     * @brief 检查路径是否为符号链接
+     * @param path 文件或目录路径
+     * @return true 如果路径存在且为符号链接
+     */
+    CCKIT_API bool cckit_fs_is_symlink(const char* path);
+
+    /**
      * @brief 删除空目录
      * @param path 目录路径
      * @return true 如果删除成功

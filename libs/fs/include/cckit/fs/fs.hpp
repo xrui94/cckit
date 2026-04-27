@@ -27,6 +27,10 @@ namespace cckit::fs
         return cckit_fs_is_directory(path.c_str());
     }
 
+    inline bool isSymlink(const std::string& path) {
+        return cckit_fs_is_symlink(path.c_str());
+    }
+
     inline std::string getSeparator() {
         return std::string(cckit_fs_get_separator());
     }
@@ -133,6 +137,10 @@ namespace cckit::fs
 
     inline bool createDirectory(const std::string& path) {
         return cckit_fs_create_directory(path.c_str());
+    }
+
+    inline bool createSymlink(const std::string& sourcePath, const std::string& targetPath) {
+        return cckit_fs_create_symlink(sourcePath.c_str(), targetPath.c_str());
     }
 
     inline bool removeDirectory(const std::string& path) {

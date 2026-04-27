@@ -437,6 +437,48 @@ extern "C" {
         }
     }
 
+    bool cckit_fs_create_symlink(const char* sourcePath, const char* targetPath) {
+        if (!sourcePath || !targetPath) return false;
+        try {
+#ifdef CCKIT_USE_GHC_FS
+            std::error_code ec;
+            if (!fs::exists(sourcePath, ec)) return false;
+            if (fs::is_symlink(targetPath, ec)) return true;
+            if (fs::is_directory(sourcePath, ec)) {
+                fs::create_directory_symlink(sourcePath, targetPath, ec);
+            } else {
+                fs::create_symlink(sourcePath, targetPath, ec);
+            }
+            return !ec;
+#else
+            if (!fs::exists(sourcePath)) return false;
+            if (fs::is_symlink(targetPath)) return true;
+            if (fs::is_directory(sourcePath)) {
+                fs::create_directory_symlink(sourcePath, targetPath);
+            } else {
+                fs::create_symlink(sourcePath, targetPath);
+            }
+            return true;
+#endif
+        } catch (...) {
+            return false;
+        }
+    }
+
+    bool cckit_fs_is_symlink(const char* path) {
+        if (!path) return false;
+        try {
+#ifdef CCKIT_USE_GHC_FS
+            std::error_code ec;
+            return fs::is_symlink(path, ec);
+#else
+            return fs::is_symlink(path);
+#endif
+        } catch (...) {
+            return false;
+        }
+    }
+
     bool cckit_fs_remove_directory(const char* path) {
         if (!path) return false;
         try {

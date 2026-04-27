@@ -181,12 +181,35 @@ namespace cckit::logging
     // 基础日志函数
     // ========================================
 
-    inline void logTrace(const std::string& msg) { cckit_log_trace(msg.c_str()); }
-    inline void logDebug(const std::string& msg) { cckit_log_debug(msg.c_str()); }
-    inline void logInfo(const std::string& msg)  { cckit_log_info(msg.c_str()); }
-    inline void logWarn(const std::string& msg)  { cckit_log_warn(msg.c_str()); }
-    inline void logError(const std::string& msg) { cckit_log_error(msg.c_str()); }
-    inline void logCritical(const std::string& msg) { cckit_log_critical(msg.c_str()); }
+    inline void logTrace(const std::string& msg) {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Trace), &cLoc, msg.c_str());
+    }
+
+    inline void logDebug(const std::string& msg) {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Debug), &cLoc, msg.c_str());
+    }
+
+    inline void logInfo(const std::string& msg)  {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Info), &cLoc, msg.c_str());
+    }
+
+    inline void logWarn(const std::string& msg)  {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Warn), &cLoc, msg.c_str());
+    }
+
+    inline void logError(const std::string& msg) {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Error), &cLoc, msg.c_str());
+    }
+
+    inline void logCritical(const std::string& msg) {
+        cckit_log_source_loc_t cLoc = SourceLoc().toC();
+        cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Critical), &cLoc, msg.c_str());
+    }
 
     // ========================================
     // 带源码位置的日志函数

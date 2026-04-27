@@ -118,7 +118,7 @@ protected:
             // 延迟初始化 fallback logger
             ensureFallbackLoggerInitialized();
             if (g_fallbackLogger) {
-                g_fallbackLogger->log(msg.level,
+                g_fallbackLogger->log(msg.source, msg.level,
                     spdlog::string_view_t{ msg.payload.data(), msg.payload.size() });
             }
             else {

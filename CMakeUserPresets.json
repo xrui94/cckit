@@ -14,7 +14,7 @@
 			"name": "local-linux-debug",
 			"inherits": "linux-x64-dynamic",
 			"environment": {
-				"VCPKG_ROOT": "/opt/vcpkg"
+				"VCPKG_ROOT": "/home/xrui94/MySpace/env/vcpkg"
 			},
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug",
@@ -25,7 +25,7 @@
 			"name": "local-linux-release",
 			"inherits": "linux-x64-dynamic",
 			"environment": {
-				"VCPKG_ROOT": "/opt/vcpkg"
+				"VCPKG_ROOT": "/home/xrui94/MySpace/env/vcpkg"
 			},
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release",

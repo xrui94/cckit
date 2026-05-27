@@ -10,6 +10,7 @@ build/
 *build*/
 dist/
 *install/
+vcpkg_installed/
 
 
 *.log

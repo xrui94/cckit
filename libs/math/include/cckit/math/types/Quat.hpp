@@ -274,7 +274,7 @@ namespace cckit::math
             T sinp = T(2) * (q.w * q.y - q.z * q.x);
             T pitch;
             if (std::abs(sinp) >= T(1)) {
-                pitch = std::copysign(PI / T(2), sinp); // use 90 degrees if out of range
+                pitch = std::copysign(HALF_PI<T>, sinp); // use 90 degrees if out of range
             } else {
                 pitch = std::asin(sinp);
             }

@@ -6,9 +6,9 @@
  * @note Requires both Quat.hpp and Mat4.hpp to be included before this file.
  */
 
-#include "types/Quat.hpp"
-#include "types/Mat4.hpp"
-#include "types/Mat3.hpp"
+#include "../types/Quat.hpp"
+#include "../types/Mat4.hpp"
+#include "../types/Mat3.hpp"
 
 namespace cckit::math
 {

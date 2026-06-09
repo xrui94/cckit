@@ -8,10 +8,13 @@
 #include <sstream>
 #include <fstream>
 #include <cstdint>
+#include <cwchar>    // wcslen
+#include <cerrno>    // errno
 
 #if defined(_WIN32) || defined(_WIN64)
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+    #include <limits.h>
     #include <libloaderapi.h>
     #include <psapi.h>
     #include <lmcons.h>
@@ -23,23 +26,28 @@
     #pragma comment(lib, "psapi.Lib")
 #elif defined(__linux__)
     #include <climits>
+    #include <iconv.h>
     #include <dlfcn.h>
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/sysinfo.h>
+    #include <sys/time.h>
     #include <pwd.h>
     #include <sys/utsname.h>
 #elif defined(__APPLE__)
     #include <mach-o/dyld.h>
     #include <climits>
+    #include <iconv.h>
     #include <dlfcn.h>
     #include <unistd.h>
     #include <sys/types.h>
     #include <sys/sysctl.h>
+    #include <sys/time.h>
     #include <pwd.h>
     #include <mach/mach.h>
     #include <mach/mach_host.h>
 #endif
+
 
 namespace cckit::runtime
 {
@@ -183,29 +191,96 @@ namespace cckit::runtime
 
 extern "C" {
 
-    // 辅助函数：将宽字符转换为 UTF-8 字符串（新分配）
-    static char* wstring_to_utf8_alloc(const wchar_t* wstr, int length)
-    {
-        if (wstr == nullptr || length <= 0)
-        {
-            return nullptr;
-        }
+// 辅助函数：将宽字符转换为 UTF-8 字符串（新分配）
+static char* wstring_to_utf8_alloc(const wchar_t* wstr, int length)
+{
+    if (wstr == nullptr) return nullptr;
+    if (length == 0) {
+        char* empty = static_cast<char*>(malloc(1));
+        if (empty) empty[0] = '\0';
+        return empty;
+    }
 
-        int utf8Size = WideCharToMultiByte(CP_UTF8, 0, wstr, length,
-                                        nullptr, 0, nullptr, nullptr);
-        if (utf8Size > 0)
-        {
-            char* result = static_cast<char*>(malloc(static_cast<size_t>(utf8Size) + 1));
-            if (result)
-            {
-                WideCharToMultiByte(CP_UTF8, 0, wstr, length,
-                                result, utf8Size, nullptr, nullptr);
-                result[utf8Size] = '\0';
-                return result;
-            }
-        }
+#ifdef _WIN32
+    // ================= Windows 平台实现 =================
+    
+    // 【改进点4】可选启用 WC_ERR_INVALID_CHARS 标志，遇到非法序列时安全失败
+    constexpr DWORD kFlags = WC_ERR_INVALID_CHARS; 
+
+    // 检查输入字符串长度是否可以安全存储在 int 中（避免 size_t 到 int 溢出）
+    if (length > static_cast<size_t>((std::numeric_limits<int>::max)())) {
+        // 【改进点3】在实际工程中，这里建议替换为真正的日志输出框架（如 spdlog）
+        // fprintf(stderr, "[Error] Input string too long for WideCharToMultiByte.\n");
         return nullptr;
     }
+    const int utf16Length = static_cast<int>(length);
+
+    // 第一次调用：获取转换所需的缓冲区大小
+    int utf8Size = WideCharToMultiByte(CP_UTF8, kFlags, wstr, utf16Length, 
+                                       nullptr, 0, nullptr, nullptr);
+    if (utf8Size > 0)
+    {
+        char* result = static_cast<char*>(malloc(static_cast<size_t>(utf8Size) + 1));
+        if (result)
+        {
+            // 第二次调用：执行实际的转换
+            WideCharToMultiByte(CP_UTF8, kFlags, wstr, utf16Length, 
+                                result, utf8Size, nullptr, nullptr);
+            result[utf8Size] = '\0';
+            return result;
+        }
+    }
+
+#else
+    // ================= Linux / macOS 平台实现 =================
+    
+    const char* from_encoding = "WCHAR_T"; 
+    const char* to_encoding = "UTF-8";
+    
+    iconv_t cd = iconv_open(to_encoding, from_encoding);
+    if (cd == (iconv_t)-1)
+    {
+        // 【改进点3】记录 iconv_open 失败错误
+        // fprintf(stderr, "[Error] iconv_open failed: %s\n", strerror(errno));
+        return nullptr;
+    }
+
+    // 准备输入和输出缓冲区
+    size_t in_bytes_left = length * sizeof(wchar_t);
+    size_t out_bytes_left = in_bytes_left * 4 + 1; 
+    
+    char* out_buf = static_cast<char*>(malloc(out_bytes_left));
+    if (!out_buf)
+    {
+        iconv_close(cd);
+        // 【改进点3】记录内存分配失败错误
+        // fprintf(stderr, "[Error] Memory allocation failed.\n");
+        return nullptr;
+    }
+
+    // iconv 会修改传入的指针，必须使用副本
+    char* src_ptr = reinterpret_cast<char*>(const_cast<wchar_t*>(wstr));
+    char* dst_ptr = out_buf;
+    size_t src_len = in_bytes_left;
+    size_t dst_len = out_bytes_left - 1; 
+
+    size_t ret = iconv(cd, &src_ptr, &src_len, &dst_ptr, &dst_len);
+    iconv_close(cd);
+
+    if (ret == static_cast<size_t>(-1))
+    {
+        free(out_buf);
+        // 【改进点3】记录转换失败错误
+        // fprintf(stderr, "[Error] iconv conversion failed: %s\n", strerror(errno));
+        return nullptr;
+    }
+
+    // 添加字符串结束符并返回
+    *dst_ptr = '\0';
+    return out_buf;
+
+#endif
+}
 
     // 辅助函数：复制字符串（新分配）
     static char* string_dup(const char* str)

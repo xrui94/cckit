@@ -1,8 +1,10 @@
 // rng.h - 随机数生成器 C 接口
 #pragma once
 
-#include "types.h"
+#include "types.h"  // 注意：该文件不是标准库，而是当前项目中的文件
 #include "../../export.h"
+
+#include "stddef.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -49,6 +49,10 @@
 #endif
 
 
+#if !defined(_WIN32) && !defined(_WIN64)
+    extern char** environ;
+#endif
+
 namespace cckit::runtime
 {
 
@@ -126,7 +130,12 @@ namespace cckit::runtime
         }
 #else
         // Linux/macOS: 使用 environ
-        extern char** ::environ;
+        // extern char** environ 写在 namespace cckit::runtime {} 内部，编译器将其解释为 cckit::runtime::environ 的声明，
+        // 而非 POSIX 的 ::environ。链接时找不到定义，产生 undefined symbol。
+        // 但如果改成“extern char** ::environ;” 则语法不合法
+        // 因此，已经在文件顶部，命名空间外，单独定义该变量了。
+        //
+        // extern char** ::environ;
         if (environ)
         {
             for (int i = 0; environ[i] != nullptr; ++i)

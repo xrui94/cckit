@@ -234,7 +234,12 @@ namespace cckit::logging
         inline void logMessage(LogLevel level, const SourceLoc& loc, const char* fmt, const Args&... args) {
             try {
                 // 使用 fmt 进行格式化，支持完整的格式化功能
-                auto formatted = fmt::format(fmt, args...);
+                // auto formatted = fmt::format(fmt, args...);
+                //
+                // C++20: fmt::format() 对第一个参数启用 consteval 编译期格式串校验，
+                // 但此处的 fmt 是运行时 const char* 参数，无法通过校验。
+                // fmt::runtime() 显式告知 fmt 跳过 consteval，保持运行时格式化。
+                auto formatted = fmt::format(fmt::runtime(fmt), args...);
                 log(level, loc, formatted);
             }
             catch (const fmt::format_error& e) {

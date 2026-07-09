@@ -1,26 +1,36 @@
 # CCKIT String Tests CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.15)
-project(cckit_string_tests VERSION 1.0.0 LANGUAGES CXX)
+project(cckit_string_tests VERSION 0.1.0 LANGUAGES CXX)
 
-# 设置 C++ 标准
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# 包含目录
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
-# 链接 cckit-string 库
 if(TARGET cckit-string)
     message(STATUS "Found cckit-string target")
 else()
     message(FATAL_ERROR "cckit-string target not found. Please build the main library first.")
 endif()
 
-# 测试可执行文件
+find_package(GTest QUIET)
+
+if(NOT GTest_FOUND)
+    message(STATUS "GTest not found, downloading...")
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.14.0
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+endif()
+
 add_executable(test_string_basic
     test_string_basic.cpp
 )
@@ -28,6 +38,8 @@ add_executable(test_string_basic
 target_link_libraries(test_string_basic
     PRIVATE
     cckit-string
+    GTest::gtest
+    GTest::gtest_main
 )
 
 add_executable(test_string_performance
@@ -37,17 +49,16 @@ add_executable(test_string_performance
 target_link_libraries(test_string_performance
     PRIVATE
     cckit-string
+    GTest::gtest
+    GTest::gtest_main
 )
 
-# 添加测试
 add_test(NAME string_basic COMMAND test_string_basic)
 add_test(NAME string_performance COMMAND test_string_performance)
 
-# 设置测试超时（秒）
 set_tests_properties(string_basic PROPERTIES TIMEOUT 30)
 set_tests_properties(string_performance PROPERTIES TIMEOUT 60)
 
-# 输出测试信息
 message(STATUS "CCKIT String Tests:")
 message(STATUS "  - test_string_basic")
 message(STATUS "  - test_string_performance")

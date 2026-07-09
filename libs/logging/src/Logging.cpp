@@ -385,12 +385,35 @@ extern "C"
         if (logger) logger->critical(msg);
     }
 
+    void cckit_log_raw(const char* msg) {
+        if (!msg) return;
+
+        auto [cb, ctx] = cckit::logging::detail::CallbackManager::instance().getCallback();
+        if (cb && *cb) {
+            (*cb)(cckit::logging::LogLevel::Raw, cckit::logging::SourceLoc(nullptr, 0, nullptr),
+                std::string(msg), ctx);
+            return;
+        }
+
+        // fallback 到 stdout
+        if (!g_fallbackDisabled) {
+            fprintf(stdout, "%s\n", msg);
+            fflush(stdout);
+        }
+    }
+
     // ========================================
     // 带源码位置的日志函数
     // ========================================
 
     void cckit_log_log(cckit_log_level_t level, const cckit_log_source_loc_t* loc, const char* msg)
     {
+        // 重入检测：必须在进入 spdlog 之前拦截，否则 base_sink<std::mutex> 的不可重入锁会导致死锁
+        if (g_in_callback) {
+            std::cerr << "[CCKIT Recursive] " << msg << std::endl;
+            return;
+        }
+
         auto logger = get_internal_logger();
         if (!logger) {
             return;

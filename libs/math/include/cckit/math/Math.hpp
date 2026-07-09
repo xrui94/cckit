@@ -26,3 +26,4 @@
 
 // 核心扩展 (自动加载常用转换)
 #include "exts/QuatExt.hpp"
+#include "exts/Vec3Ext.hpp"

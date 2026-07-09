@@ -21,7 +21,7 @@
 #include <sstream>
 
 // C API
-#include "cckit/geo/capi/geo.h"
+#include "capi/geo.h"
 
 // C++ types
 #include "Cartesian3.hpp"

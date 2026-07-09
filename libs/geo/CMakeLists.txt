@@ -23,11 +23,18 @@ option(CCKIT_GEO_BUILD_TESTS "Build geo sub-library tests" OFF)
 # Library target
 # ========================================
 
-add_library(cckit-geo STATIC
-    src/Geo.cpp
-)
+if(CCKIT_BUILD_SHARED)
+    add_library(cckit-geo SHARED
+        src/Geo.cpp
+    )
+    target_compile_definitions(cckit-geo PRIVATE CCKIT_BUILDING_DLL)
+else()
+    add_library(cckit-geo STATIC
+        src/Geo.cpp
+    )
+endif()
 
-add_library(cckit::cckit-geo ALIAS cckit-geo)
+add_library(cckit::geo ALIAS cckit-geo)
 
 # ========================================
 # Compile options
@@ -69,38 +76,7 @@ target_include_directories(cckit-geo
 # ========================================
 
 if(CCKIT_GEO_BUILD_TESTS OR CCKIT_BUILD_TESTS)
-    enable_testing()
-
-    find_package(GTest QUIET)
-
-    if(NOT GTest_FOUND)
-        message(STATUS "GTest not found, downloading...")
-        include(FetchContent)
-        FetchContent_Declare(
-            googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG v1.14.0
-        )
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-        FetchContent_MakeAvailable(googletest)
-    endif()
-
-    add_executable(geo-tests
-        test/test_main.cpp
-        test/test_cartesian3.cpp
-        test/test_cartographic.cpp
-    )
-
-    target_link_libraries(geo-tests PRIVATE
-        cckit-geo
-        GTest::gtest
-        GTest::gtest_main
-    )
-
-    # Add tests to ctest
-    add_test(NAME Cartesian3Tests COMMAND geo-tests --gtest_filter=Cartesian3Test.*)
-    add_test(NAME CartographicTests COMMAND geo-tests --gtest_filter=CartographicTest.*)
-    add_test(NAME GeodeticTests COMMAND geo-tests --gtest_filter=GeodeticTest.*)
+    add_subdirectory(test)
 endif()
 
 # 安装

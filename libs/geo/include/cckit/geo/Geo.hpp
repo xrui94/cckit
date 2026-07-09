@@ -7,11 +7,11 @@
 #include <sstream>
 
 // C API
-#include "cckit/geo/capi/geo.h"
+#include "capi/geo.h"
 
 // C++ types
-#include "cckit/geo/types/Cartesian3.hpp"
-#include "cckit/geo/types/Cartographic.hpp"
+#include "types/Cartesian3.hpp"
+#include "types/Cartographic.hpp"
 
 namespace cckit::geo
 {

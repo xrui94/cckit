@@ -13,6 +13,7 @@
 
 #include "../MathConfig.h"
 #include "../Tolerance.hpp"
+#include "../Constants.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -303,7 +304,7 @@ namespace cckit::math
 
                if (cosTheta < T(0)) {
                    // 钝角 (90° ~ 180°)
-                   return T(M_PI) - std::asin(sinTheta);
+                    return PI<T> - std::asin(sinTheta);
                }
                else {
                    // 锐角 (0° ~ 90°)

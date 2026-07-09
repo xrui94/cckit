@@ -18,7 +18,8 @@ extern "C" {
         CCKIT_LOG_WARN = 3,
         CCKIT_LOG_ERROR = 4,
         CCKIT_LOG_CRITICAL = 5,
-        CCKIT_LOG_OFF = 6
+        CCKIT_LOG_RAW = 6,
+        CCKIT_LOG_OFF = 99
     } cckit_log_level_t;
 
     // 源码位置信息
@@ -129,6 +130,7 @@ extern "C" {
     CCKIT_API void cckit_log_warn(const char* msg);
     CCKIT_API void cckit_log_error(const char* msg);
     CCKIT_API void cckit_log_critical(const char* msg);
+    CCKIT_API void cckit_log_raw(const char* msg);
 
     // ========================================
     // 带源码位置的日志函数

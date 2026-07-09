@@ -31,6 +31,7 @@ namespace cckit::logging
         Warn = CCKIT_LOG_WARN,
         Error = CCKIT_LOG_ERROR,
         Critical = CCKIT_LOG_CRITICAL,
+        Raw = CCKIT_LOG_RAW,
         Off = CCKIT_LOG_OFF
     };
 
@@ -211,6 +212,10 @@ namespace cckit::logging
         cckit_log_log(static_cast<cckit_log_level_t>(LogLevel::Critical), &cLoc, msg.c_str());
     }
 
+    inline void logRaw(const std::string& msg) {
+        cckit_log_raw(msg.c_str());
+    }
+
     // ========================================
     // 带源码位置的日志函数
     // ========================================
@@ -284,6 +289,12 @@ namespace cckit::logging
         detail::logMessage(LogLevel::Critical, loc, fmt, args...);
     }
 
+    // logRaw 不需要输出带源码位置的日志，而是原样输出
+    //template<typename... Args>
+    //inline void logRaw(const SourceLoc& loc, const char* fmt, const Args&... args) {
+    //    detail::logMessage(LogLevel::Raw, loc, fmt, args...);
+    //}
+
     // ========================================
     // 日志生命周期管理
     // ========================================
@@ -325,12 +336,13 @@ namespace cckit::logging
 // ========================================
 
 // 整数级别，用于宏比较
-#define CCKIT_LOG_LEVEL_TRACE     0
-#define CCKIT_LOG_LEVEL_DEBUG     1
-#define CCKIT_LOG_LEVEL_INFO      2
-#define CCKIT_LOG_LEVEL_WARN      3
-#define CCKIT_LOG_LEVEL_ERROR     4
-#define CCKIT_LOG_LEVEL_CRITICAL  5
+#define CCKIT_LOG_LEVEL_TRACE       0
+#define CCKIT_LOG_LEVEL_DEBUG       1
+#define CCKIT_LOG_LEVEL_INFO        2
+#define CCKIT_LOG_LEVEL_WARN        3
+#define CCKIT_LOG_LEVEL_ERROR       4
+#define CCKIT_LOG_LEVEL_CRITICAL    5
+#define CCKIT_LOG_LEVEL_RAW         6
 
 // 用户可通过 -DCCKIT_MIN_LOG_LEVEL=x 控制最低输出级别
 // 未定义时，根据模式自动设置
@@ -353,6 +365,10 @@ namespace cckit::logging
 #define CCKIT_LOG_WARN(...)   do { if (CCKIT_LOG_LEVEL_WARN  >= CCKIT_MIN_LOG_LEVEL)      cckit::logging::logWarn(cckit::logging::SourceLoc(), __VA_ARGS__); } while(0)
 #define CCKIT_LOG_ERROR(...)  do { if (CCKIT_LOG_LEVEL_ERROR >= CCKIT_MIN_LOG_LEVEL)     cckit::logging::logError(cckit::logging::SourceLoc(), __VA_ARGS__); } while(0)
 #define CCKIT_LOG_CRITICAL(...) do { if (CCKIT_LOG_LEVEL_CRITICAL >= CCKIT_MIN_LOG_LEVEL) cckit::logging::logCritical(cckit::logging::SourceLoc(), __VA_ARGS__); } while(0)
+
+// LOG_RAW 的设计初衷是原样输出，因此， logRaw 不应该有源码位置
+//#define CCKIT_LOG_RAW(...) do { if (CCKIT_LOG_LEVEL_RAW >= CCKIT_MIN_LOG_LEVEL) cckit::logging::logRaw(cckit::logging::SourceLoc(), __VA_ARGS__); } while(0)
+#define CCKIT_LOG_RAW(msg) do { if (CCKIT_LOG_LEVEL_RAW >= CCKIT_MIN_LOG_LEVEL) cckit::logging::logRaw(msg); } while(0)
 
 // ========================================
 // 简化日志宏
@@ -379,27 +395,31 @@ namespace cckit::logging
 
     // 只在未定义时提供简化宏
     #ifndef LOG_TRACE
-        #define LOG_TRACE(...)    CCKIT_LOG_TRACE(__VA_ARGS__)
+        #define LOG_TRACE(...)      CCKIT_LOG_TRACE(__VA_ARGS__)
     #endif
 
     #ifndef LOG_DEBUG
-        #define LOG_DEBUG(...)    CCKIT_LOG_DEBUG(__VA_ARGS__)
+        #define LOG_DEBUG(...)      CCKIT_LOG_DEBUG(__VA_ARGS__)
     #endif
 
     #ifndef LOG_INFO
-        #define LOG_INFO(...)     CCKIT_LOG_INFO(__VA_ARGS__)
+        #define LOG_INFO(...)       CCKIT_LOG_INFO(__VA_ARGS__)
     #endif
 
     #ifndef LOG_WARN
-        #define LOG_WARN(...)     CCKIT_LOG_WARN(__VA_ARGS__)
+        #define LOG_WARN(...)       CCKIT_LOG_WARN(__VA_ARGS__)
     #endif
 
     #ifndef LOG_ERROR
-        #define LOG_ERROR(...)    CCKIT_LOG_ERROR(__VA_ARGS__)
+        #define LOG_ERROR(...)      CCKIT_LOG_ERROR(__VA_ARGS__)
     #endif
 
     #ifndef LOG_CRITICAL
-        #define LOG_CRITICAL(...) CCKIT_LOG_CRITICAL(__VA_ARGS__)
+        #define LOG_CRITICAL(...)   CCKIT_LOG_CRITICAL(__VA_ARGS__)
+    #endif
+
+    #ifndef LOG_RAW
+        #define LOG_RAW(...)        CCKIT_LOG_RAW(__VA_ARGS__)
     #endif
 
 #endif // CCKIT_DISABLE_SIMPLE_MACROS

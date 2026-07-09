@@ -78,6 +78,19 @@ namespace
                 return static_cast<uint64_t>((*mt19937)());
             }
         }
+
+        // 将分布直接作用于当前激活的引擎，避免每次重建引擎破坏随机序列质量
+        template <typename Distribution>
+        auto apply(Distribution& dist) -> decltype(dist(*mt19937))
+        {
+            switch (type) {
+            case CCKIT_RNG_MT19937:     return dist(*mt19937);
+            case CCKIT_RNG_MT19937_64:  return dist(*mt19937_64);
+            case CCKIT_RNG_MINSTD_RAND: return dist(*minstd);
+            case CCKIT_RNG_KNUTH_B:     return dist(*knuth_b);
+            default:                    return dist(*mt19937);
+            }
+        }
     };
 
     // 生成高质量种子
@@ -148,8 +161,7 @@ int32_t cckit_rng_int(cckit_rng_t* rng, int32_t min, int32_t max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_int_distribution<int32_t> dist(min, max);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 uint32_t cckit_rng_uint(cckit_rng_t* rng, uint32_t min, uint32_t max)
@@ -157,8 +169,7 @@ uint32_t cckit_rng_uint(cckit_rng_t* rng, uint32_t min, uint32_t max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_int_distribution<uint32_t> dist(min, max);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 int64_t cckit_rng_int64(cckit_rng_t* rng, int64_t min, int64_t max)
@@ -166,8 +177,7 @@ int64_t cckit_rng_int64(cckit_rng_t* rng, int64_t min, int64_t max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_int_distribution<int64_t> dist(min, max);
-    std::mt19937_64 temp(rng->engine.next());
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 uint64_t cckit_rng_uint64(cckit_rng_t* rng, uint64_t min, uint64_t max)
@@ -175,8 +185,7 @@ uint64_t cckit_rng_uint64(cckit_rng_t* rng, uint64_t min, uint64_t max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_int_distribution<uint64_t> dist(min, max);
-    std::mt19937_64 temp(rng->engine.next());
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 // ========================================
@@ -188,8 +197,7 @@ float cckit_rng_float(cckit_rng_t* rng, float min, float max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_real_distribution<float> dist(min, max);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 double cckit_rng_double(cckit_rng_t* rng, double min, double max)
@@ -197,8 +205,7 @@ double cckit_rng_double(cckit_rng_t* rng, double min, double max)
     assert(rng != nullptr);
     assert(min <= max);
     std::uniform_real_distribution<double> dist(min, max);
-    std::mt19937_64 temp(rng->engine.next());
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 float cckit_rng_unit_float(cckit_rng_t* rng)
@@ -219,16 +226,14 @@ float cckit_rng_normal_float(cckit_rng_t* rng, float mean, float stddev)
 {
     assert(rng != nullptr);
     std::normal_distribution<float> dist(mean, stddev);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 double cckit_rng_normal_double(cckit_rng_t* rng, double mean, double stddev)
 {
     assert(rng != nullptr);
     std::normal_distribution<double> dist(mean, stddev);
-    std::mt19937_64 temp(rng->engine.next());
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 // ========================================
@@ -245,8 +250,7 @@ bool cckit_rng_bool_with_prob(cckit_rng_t* rng, float p)
     assert(rng != nullptr);
     assert(p >= 0.0f && p <= 1.0f);
     std::bernoulli_distribution dist(p);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 // ========================================
@@ -260,8 +264,7 @@ size_t cckit_rng_weighted_index(cckit_rng_t* rng, const float* weights, size_t c
     assert(count > 0);
 
     std::discrete_distribution<size_t> dist(weights, weights + count);
-    std::mt19937 temp(static_cast<std::mt19937::result_type>(rng->engine.next()));
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 size_t cckit_rng_weighted_index_d(cckit_rng_t* rng, const double* weights, size_t count)
@@ -271,8 +274,7 @@ size_t cckit_rng_weighted_index_d(cckit_rng_t* rng, const double* weights, size_
     assert(count > 0);
 
     std::discrete_distribution<size_t> dist(weights, weights + count);
-    std::mt19937_64 temp(rng->engine.next());
-    return dist(temp);
+    return rng->engine.apply(dist);
 }
 
 // ========================================

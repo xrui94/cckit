@@ -16,7 +16,7 @@
 #include <sstream>
 
 // C API
-#include "capi/geo.h"
+#include <cckit/geo/capi/geo.h>
 
 namespace cckit::geo
 {
